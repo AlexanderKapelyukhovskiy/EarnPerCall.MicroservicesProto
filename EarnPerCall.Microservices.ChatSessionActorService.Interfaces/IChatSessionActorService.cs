@@ -16,7 +16,10 @@ namespace EarnPerCall.Microservices.ChatSessionActorService.Interfaces
     /// </summary>
     public interface IChatSessionActorService : IActor
     {
-        Task StartSession(int sessionId, int availableTime);
-        Task StopSession(int sessionId);
+        Task InitChatSession(int advisorId, int customerId);
+
+        Task SetPauseReminder(DateTime pauseTime);
+
+        Task ClearPauseReminder();
     }
 }

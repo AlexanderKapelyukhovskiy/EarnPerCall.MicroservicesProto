@@ -1,4 +1,5 @@
-﻿using EarnPerCall.Microservices.ChatSessionActorService.Interfaces;
+﻿using EarnPerCall.Microservices.Api.Models;
+using EarnPerCall.Microservices.ChatSessionActorService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.ServiceFabric.Actors;
@@ -8,9 +9,20 @@ using System.Threading.Tasks;
 
 namespace EarnPerCall.Microservices.Api.Controllers
 {
+    public class ChatSessionBaseController : ControllerBase
+    {
+        protected IChatSessionActorService GetActor(int sessionId)
+        {
+            return ActorProxy.Create<IChatSessionActorService>(
+                new ActorId(sessionId),
+                new Uri("fabric:/EarnPerCall.Microservices/ChatSessionActorServiceActorService")
+            );
+        }
+    }
+
     [ApiController]
-    [Route("/api/[controller]")]
-    public class ChatSessionController : ControllerBase
+    [Route("/api/micro/chat/sessions")]
+    public class ChatSessionController : ChatSessionBaseController
     {
         private readonly ILogger<ChatSessionController> _logger;
 
@@ -20,27 +32,13 @@ namespace EarnPerCall.Microservices.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(int sessionId, int avaliableTime)
+        public async Task<IActionResult> Post([FromBody] ApiChatSessionModel model)
         {
-            await GetActor(sessionId).StartSession(sessionId, avaliableTime);
+            var session = GetActor(model.SessionId);
+
+            await session.InitChatSession(model.AdvisorId, model.CustomerId);
 
             return new OkObjectResult(new { success = true });
-        }
-
-        [HttpDelete]
-        public async Task<IActionResult> Delete(int sessionId)
-        {
-            await GetActor(sessionId).StopSession(sessionId);
-
-            return new OkObjectResult(new { success = true });
-        }
-
-        private IChatSessionActorService GetActor(int sessionId)
-        {
-            return ActorProxy.Create<IChatSessionActorService>(
-                new ActorId(sessionId),
-                new Uri("fabric:/EarnPerCall.Microservices/ChatSessionActorServiceActorService")
-            );
         }
     }
 }
