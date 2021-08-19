@@ -6,6 +6,7 @@ using EarnPerCall.Microservices.ChatSessionActorService.Interfaces;
 
 namespace EarnPerCall.Microservices.ChatSessionActorService
 {
+
     [StatePersistence(StatePersistence.Persisted)]
     internal class ChatSessionActorService : Actor, IChatSessionActorService, IRemindable
     {
@@ -72,6 +73,12 @@ namespace EarnPerCall.Microservices.ChatSessionActorService
 
             string advisorChannelName = $"App.User-{advisorId.Value}";
             string customerChannelName = $"App.User-{customerId.Value}";
+            string message = $"Pause|{Id}";
+
+            var publicClient = PubnubClient.GetInstance();
+
+            publicClient.Send(advisorChannelName, message);
+            publicClient.Send(customerChannelName, message);
 
             ActorEventSource.Current.ActorMessage(this,
                 $"Send 'Session Paused' event to {customerChannelName} and {advisorChannelName}" +
