@@ -71,8 +71,8 @@ namespace EarnPerCall.Microservices.ChatSessionActorService
                 return;
             }
 
-            string advisorChannelName = $"App.User-{advisorId.Value}";
-            string customerChannelName = $"App.User-{customerId.Value}";
+            string advisorChannelName = $"App.User.{advisorId.Value}";
+            string customerChannelName = $"App.User.{customerId.Value}";
             string message = $"Pause|{Id}";
 
             var publicClient = PubnubClient.GetInstance();
