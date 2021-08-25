@@ -1,3 +1,3 @@
 # EarnPerCall.MicroservicesProto
 
-Prototype of Microservice which uses Actor Service for unpause chat session
+Prototype of Microservices which uses Actor Service for unpause chat session
